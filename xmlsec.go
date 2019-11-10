@@ -12,7 +12,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/lestrrat-go/xmlsec/clib"
+	"github.com/jcca/xmlsec/clib"
 )
 
 var initLock = sync.Mutex{}

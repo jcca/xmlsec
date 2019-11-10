@@ -3,9 +3,9 @@ package dsig
 import (
 	"errors"
 
+	"github.com/jcca/xmlsec/clib"
+	"github.com/jcca/xmlsec/crypto"
 	"github.com/lestrrat-go/libxml2/types"
-	"github.com/lestrrat-go/xmlsec/clib"
-	"github.com/lestrrat-go/xmlsec/crypto"
 )
 
 // NewCtx creates a new XML Signature Context

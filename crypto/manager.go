@@ -3,8 +3,8 @@ package crypto
 import (
 	"crypto/rsa"
 
+	"github.com/jcca/xmlsec/clib"
 	"github.com/lestrrat-go/libxml2/types"
-	"github.com/lestrrat-go/xmlsec/clib"
 )
 
 func NewKeyManager() (*KeyManager, error) {
@@ -47,5 +47,6 @@ func (km *KeyManager) LoadKeyFromRSAPrivateKey(privkey *rsa.PrivateKey) error {
 }
 
 func (km *KeyManager) LoadCert(buf []byte, format KeyDataFormat, typ KeyDataType) error {
-	return clib.XMLSecKeysMngrCertLoadMemory(km, buf, clib.KeyDataFormat(format), clib.KeyDataType(typ))
+	//return clib.XMLSecKeysMngrCertLoadMemory(km, buf, clib.KeyDataFormat(format), clib.KeyDataType(typ))
+	return clib.XMLSecKeysMngrCertLoadMemory(km, buf, clib.KeyDataFormat(format), clib.KeyDataTypeTrusted)
 }

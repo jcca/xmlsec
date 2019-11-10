@@ -21,6 +21,8 @@ warned.
 package clib
 
 /*
+#cgo CFLAGS: -DXMLSEC_CRYPTO_OPENSSL -DXMLSEC_CRYPTO_DYNAMIC_LOADING
+#cgo LDFLAGS: -lxmlsec1-openssl
 #cgo pkg-config: xmlsec1
 #include <stdlib.h>
 #include <libxml/tree.h>
@@ -62,6 +64,12 @@ go_xmlsec_init() {
   if(xmlSecCheckVersion() != 1) {
     return -1;
   }
+  if(xmlSecCryptoDLLoadLibrary(NULL) < 0) {
+        fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
+                        "that you have it installed and check shared libraries path\n"
+                        "(LD_LIBRARY_PATH and/or LTDL_LIBRARY_PATH) environment variables.\n");
+        return -1;
+    }
 
   if(xmlSecCryptoAppInit(NULL) < 0) {
     return -1;
@@ -90,6 +98,14 @@ static inline xmlSecTransformId MY_Sha1Id() {
 
 static inline xmlSecTransformId MY_RsaSha1Id() {
 	return xmlSecTransformRsaSha1Id;
+}
+
+static inline xmlSecTransformId MY_Sha256Id() {
+	return xmlSecTransformSha256Id;
+}
+
+static inline xmlSecTransformId MY_RsaSha256Id() {
+	return xmlSecTransformRsaSha256Id;
 }
 
 static int
@@ -158,12 +174,23 @@ type TransformID struct {
 }
 
 var (
+	ExclC14N  TransformID
+	Enveloped TransformID
+	InclC14N  TransformID
+	Sha1      TransformID
+	RsaSha1   TransformID
+	Sha256    TransformID
+	RsaSha256 TransformID
+)
+
+/*
+var (
 	ExclC14N  = TransformID{ptr: C.xmlSecTransformExclC14NGetKlass()}
 	Enveloped = TransformID{ptr: C.xmlSecTransformEnvelopedGetKlass()}
 	InclC14N  = TransformID{ptr: C.xmlSecTransformInclC14NGetKlass()}
 	Sha1      = TransformID{ptr: C.MY_Sha1Id()}
 	RsaSha1   = TransformID{ptr: C.MY_RsaSha1Id()}
-)
+)*/
 
 // XMLSecInit initializes xmlsec by calling the various initilizers.
 // Currently it sets up libxslt to disable interaction with the
@@ -173,6 +200,13 @@ func XMLSecInit() error {
 	if C.go_xmlsec_init() < C.int(0) {
 		return errors.New("failed to initialize")
 	}
+	ExclC14N = TransformID{ptr: C.xmlSecTransformExclC14NGetKlass()}
+	Enveloped = TransformID{ptr: C.xmlSecTransformEnvelopedGetKlass()}
+	InclC14N = TransformID{ptr: C.xmlSecTransformInclC14NGetKlass()}
+	Sha1 = TransformID{ptr: C.MY_Sha1Id()}
+	RsaSha1 = TransformID{ptr: C.MY_RsaSha1Id()}
+	Sha256 = TransformID{ptr: C.MY_Sha256Id()}
+	RsaSha256 = TransformID{ptr: C.MY_RsaSha256Id()}
 	return nil
 }
 
